@@ -78,8 +78,8 @@ namespace Render{
                 printShaderCompilerErrors();
             #endif
         }
-        inline Shader(const GLchar* source, const GLint len)
-        : Shader(&source, &len, 1){
+        inline Shader(const uint8_t* source, const GLint len)
+        : Shader((const GLchar**)(&source), &len, 1){
         }
         inline Shader(const Util::ArrPtr<GLchar, GLint> source)
         : Shader(source.ptr, source.len){
@@ -215,18 +215,18 @@ namespace Render{
         inline VertexArrays(GLsizei n): n(n){ glGenVertexArrays(n, &arrays); }
 
         // Links a Vertex Buffer to this Vertex Array
-        inline void LinkBuffers(VertexBuffers& vertexBuffers, GLuint layoutIndex, GLuint numComponents, AttribPtr type, GLsizeiptr stride, size_t offset, GLboolean normalized = GL_FALSE){
+        inline void LinkBuffers(VertexBuffers& vertexBuffers, GLuint layoutIndex, GLuint numComponents, AttribPtr type, GLsizei stride, size_t offset, GLboolean normalized = GL_FALSE){
             vertexBuffers.use();
             glVertexAttribPointer(layoutIndex, numComponents, static_cast<GLenum>(type), normalized, stride, (void*)offset);
             glEnableVertexAttribArray(layoutIndex);
             // vertexBuffers.unbind();
         }
-        inline void LinkBuffers(VertexBuffers& vertexBuffers, GLuint layoutIndex, GLuint numComponents, AttribIPtr type, GLsizeiptr stride, size_t offset){
+        inline void LinkBuffers(VertexBuffers& vertexBuffers, GLuint layoutIndex, GLuint numComponents, AttribIPtr type, GLsizei stride, size_t offset){
             vertexBuffers.use();
             glVertexAttribIPointer(layoutIndex, numComponents, static_cast<GLenum>(type), stride, (void*)offset);
             glEnableVertexAttribArray(layoutIndex);
         }
-        inline void LinkBuffers(VertexBuffers& vertexBuffers, GLuint layoutIndex, GLuint numComponents, AttribLPtr type, GLsizeiptr stride, size_t offset){
+        inline void LinkBuffers(VertexBuffers& vertexBuffers, GLuint layoutIndex, GLuint numComponents, AttribLPtr type, GLsizei stride, size_t offset){
             vertexBuffers.use();
             glVertexAttribLPointer(layoutIndex, numComponents, static_cast<GLenum>(type), stride, (void*)offset);
             glEnableVertexAttribArray(layoutIndex);

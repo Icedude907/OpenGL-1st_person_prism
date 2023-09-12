@@ -58,14 +58,14 @@ namespace Game{
             if(e.matches(keyEsc, PRESS)){ 
                 captureMouse = false; 
                 screen.setMouseCapture(vkfw::CursorMode::Normal);
-                screen.moveMouse(screen.width/2, screen.height/2);
+                screen.moveMouse(screen.width/2.0, screen.height/2.0);
             }
             if(e.matches(keyLc,  PRESS)){ 
                 captureMouse = true;
                 screen.setMouseCapture(vkfw::CursorMode::Disabled);
-                prevX = screen.width/2;
-                prevY = screen.height/2;
-                screen.moveMouse(screen.width/2, screen.height/2);
+                prevX = screen.width/2.0;
+                prevY = screen.height/2.0;
+                screen.moveMouse(screen.width/2.0, screen.height/2.0);
             }
 
             if(e.matches(keyW) ){ forward = e.pressed(); }
@@ -111,31 +111,28 @@ namespace Game{
         void setupCameraInput(){
             using namespace Input;
             using namespace Input::Actions;
-            ButtonInputHandler keyHandle{
-                std::bind(onCameraKeyEvent, this, std::placeholders::_1),
-                [](ActiveContexts& contexts)->bool{return true;},
-                {
-                    {keyEsc, PRESS|RELEASE},
-                    {keyLc, PRESS|RELEASE},
-                    {keyR, PRESS|RELEASE},
-                    {keyW, PRESS|RELEASE},
-                    {keyS, PRESS|RELEASE},
-                    {keyA, PRESS|RELEASE},
-                    {keyD, PRESS|RELEASE},
-                    {keySp, PRESS|RELEASE},
-                    {keySh, PRESS|RELEASE},
-                    {keyQ, PRESS|RELEASE},
-                    {keyE, PRESS|RELEASE},
-                }
+            auto event = std::bind(&CameraController::onCameraKeyEvent, this, std::placeholders::_1);
+            auto shouldTrigger = [](ActiveContexts& contexts)->bool{return true;};
+            std::vector<Trigger::Button> triggers = {
+                {keyEsc, PRESS|RELEASE},
+                {keyLc, PRESS|RELEASE},
+                {keyR, PRESS|RELEASE},
+                {keyW, PRESS|RELEASE},
+                {keyS, PRESS|RELEASE},
+                {keyA, PRESS|RELEASE},
+                {keyD, PRESS|RELEASE},
+                {keySp, PRESS|RELEASE},
+                {keySh, PRESS|RELEASE},
+                {keyQ, PRESS|RELEASE},
+                {keyE, PRESS|RELEASE},
             };
+            ButtonInputHandler keyHandle(event, shouldTrigger, triggers);
             inputSystem.addHandler(keyHandle);
             
-            MousePosInputHandler mouseHandle{
-                std::bind(onCameraMouseEvent, this, std::placeholders::_1),
-                {
-                    {} // Capture changed event
-                }
-            };
+            MousePosInputHandler mouseHandle(
+                std::bind(&CameraController::onCameraMouseEvent, this, std::placeholders::_1),
+                {{}} // Universal capture changed event
+            );
             inputSystem.addHandler(mouseHandle);
         }
     };

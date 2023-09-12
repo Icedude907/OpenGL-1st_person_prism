@@ -50,7 +50,7 @@ namespace Util{
         
         // Returns the first ID free in the list.
         ID findFree(){
-            ID prevVal; // = 0
+            static ID prevVal; // = 0 (set once)
             if(store.empty()) return prevVal;
             for (auto it = store.begin(); it != store.end(); it++){
                 ID currentVal = it->first;

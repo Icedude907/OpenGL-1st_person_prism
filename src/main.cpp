@@ -1,4 +1,4 @@
-// Obligatory OpenGL 2D platformer I made to put basic concepts into practice
+// Made to put basic concepts into practice
 // Doesn't work on MacOS since its restricted to 3.3
 //
 
@@ -10,8 +10,6 @@
 #include <utility>
 #include <iostream>
 #include <thread>
-
-#include <incbin.h>
 
 #include <GL/gl3w.h>
 #define VKFW_INLINE
@@ -55,14 +53,12 @@ enum ExitCodes: int{
     DATA_LOAD_FAILED = 0x30,
 };
 
-extern "C"{
-    // INCBIN is a fantastic feature why doesn't every language have this by default?
-    // If you were using Vulkan, compile the shaders on the build system to SPIR-V and then incbin the output.
-    #undef INCBIN_PREFIX
-    #define INCBIN_PREFIX r_
-    INCBIN(char, basicVertexFile, "basic.vsh");
-    INCBIN(char, basicFragmentFile, "basic.fsh");
-}
+// INCBIN is a fantastic feature why doesn't every language have this by default?
+// If you were using Vulkan, compile the shaders on the build system to SPIR-V and then incbin the output.
+#define INCBIN_PREFIX r_
+#include <incbin.h>
+INCBIN(basicVertexFile, "shader/basic.vsh");
+INCBIN(basicFragmentFile, "shader/basic.fsh");
 
 struct ShaderData{
     glm::vec3 pos;
@@ -142,7 +138,6 @@ class Instance{
         glClear(GL_COLOR_BUFFER_BIT);
         screen.present();
         //
-
         VertexShader vertexShader(r_basicVertexFileData, r_basicVertexFileSize);
         FragmentShader fragmentShader(r_basicFragmentFileData, r_basicFragmentFileSize);
         shaderProgram = ShaderProgram(vertexShader, fragmentShader);
@@ -215,7 +210,7 @@ class Instance{
         screen.frameTimes.start();
         glEnable(GL_DEPTH_TEST); // Disable for fun
 
-        screen.window->callbacks()->on_framebuffer_resize = std::bind(resize_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+        screen.window->callbacks()->on_framebuffer_resize = std::bind(&Instance::resize_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
         camctrl.setupCameraInput();
         return 0;
     }

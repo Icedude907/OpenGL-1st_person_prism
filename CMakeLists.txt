@@ -1,12 +1,16 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.27)
 
 # set the project name and version
-project(ObligatoryPlatformer VERSION 1.0)
-set(glfw_version 3.3.5)
+project(OpenGLtest VERSION 1.0)
+set(glfw_version 3.3.8)
 set(vkfw_timestamp 21-1-21)
 set(glm_version 0.9.9.8)
 
+# Gl3w fix
+execute_process(COMMAND python gl3w_gen.py --root ${PROJECT_BINARY_DIR}/libs/gl3w WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/gl3w)
+
 # specify the C++ standard
+# INCBIN currently is broken on MSVC - this will be replaced once c23 is properly implemented by them
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -14,6 +18,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(glfw_name "glfw-${glfw_version}")
 set(vkfw_name "vkfw@${vkfw_timestamp}")
 set(glm_name "glm-${glm_version}")
+find_package(Vulkan REQUIRED)
 
 # building
 
@@ -35,6 +40,10 @@ target_include_directories(OPGL PUBLIC
     "libs/${glm_name}"
     "libs/incbin"
     "libs/stb"
-    "src/shader"
+    "src/incbin"
+    ${Vulkan_INCLUDE_DIRS}
 )
+if(MINGW)
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+endif()
 target_link_libraries(OPGL PUBLIC opengl32 gl3w glfw ${GLFW_LIBRARIES})

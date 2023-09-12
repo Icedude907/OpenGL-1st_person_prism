@@ -48,8 +48,8 @@ namespace Render{
             glfwInstance = vkfw::initUnique(); // Unique automatically deallocates
             vkfw::WindowHints hints;
                 hints.clientAPI = vkfw::ClientAPI::OpenGL;
-                hints.contextVersionMajor = 4;
-                hints.contextVersionMinor = 6;
+                hints.contextVersionMajor = 4u;
+                hints.contextVersionMinor = 6u;
                 hints.openGLProfile = vkfw::OpenGLProfile::Core;
             window = vkfw::createWindowUnique(width, height, title, hints);
             vkfw::setErrorCallback(error_callback);
@@ -85,7 +85,7 @@ namespace Render{
         }
         private:
         inline void updateShouldRender(){ shouldRender = !(width == 0 || height == 0); }
-        inline void resizeViewport(){ glViewport(0, 0, this->width, this->height); }
+        inline void resizeViewport(){ glViewport(0, 0, (GLsizei)this->width, (GLsizei)this->height); }
         static void default_error_callback(int error_code, const char* description){
             std::cerr << "Error: " << description << std::endl;
         }
